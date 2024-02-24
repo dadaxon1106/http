@@ -84,6 +84,4 @@ class Network {
     return params;
   }
 
-  static List<Employees> parsePostList(String response) => List<Employees>.from(
-      jsonDecode(response).map((x) => Employees.fromJson(x)));
 }

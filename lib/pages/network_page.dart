@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson_network_homework/model/employee_model.dart';
 import 'package:lesson_network_homework/service/http_service.dart';
@@ -27,7 +28,7 @@ class _NetworkPageState extends State<NetworkPage> {
     if (response != null) {
       setState(() {
         isLoading = false;
-        items = Network.parsePostList(response);
+        items = employeesFromJson(response).data;
       });
     }
   }
@@ -70,28 +71,34 @@ class _NetworkPageState extends State<NetworkPage> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : ListView.builder(itemBuilder: (ctx, index) {
+          : ListView.builder(
+        padding:const EdgeInsets.all(12),
+        itemCount:items.length,
+          itemBuilder: (ctx, index) {
               return itemEmp(items[index]);
             }),
     );
   }
 
   Widget itemEmp(Employee employee) {
-    return SizedBox(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            employee.employeeName.toString(),
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            employee.employeeAge.toString(),
-            style: const TextStyle(color: Colors.black, fontSize: 18),
-          ),
-        ],
+    return InkWell(
+      onTap: (){},
+      child: SizedBox(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              employee.employeeName.toString(),
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              employee.employeeSalary.toString(),
+              style: const TextStyle(color: Colors.black, fontSize: 18),
+            ),
+          ],
+        ),
       ),
     );
   }
