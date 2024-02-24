@@ -11,44 +11,88 @@ class NetworkPage extends StatefulWidget {
 }
 
 class _NetworkPageState extends State<NetworkPage> {
+  bool isLoading = false;
+  var items = [];
   @override
   void initState() {
     super.initState();
-    var employee = Employee(id: 1,employee_age: "18",employee_Name: "Dadaxon",employee_image: "",employee_salary: "3200000");
-    // _apiCreatePost(employee);
-    // _apiUpdate(employee);
-    _apiDelete(employee);
+    _apiGetList();
   }
 
-  void _apiGetList(){
-    Network.GET(Network.API_LIST, Network.paramsEmpty()).then((response) => {
-      LogService.i(response.toString())
+  void _apiGetList() async {
+    setState(() {
+      isLoading = true;
     });
-  }
-  void _apiGetSingle(Employee employee){
-    Network.GET(Network.API_LIST_SINGLE + employee.id.toString(), Network.paramsEmpty()).then((response) => {
-      LogService.d(response.toString())
-    });
+    var response = await Network.GET(Network.API_LIST, Network.paramsEmpty());
+    if (response != null) {
+      setState(() {
+        isLoading = false;
+        items = Network.parsePostList(response);
+      });
+    }
   }
 
-  void _apiDelete(Employee employee){
-    Network.DEL(Network.API_DELETE + employee.id.toString(), Network.paramsEmpty()).then((response) => {
-      LogService.d(response.toString())
-    });
-  }
-  void _apiCreatePost(Employee employee){
-    Network.POST(Network.API_CREATE, Network.paramsCreate(employee)).then((response) => {
-      LogService.i(response.toString())
-    });
+  void _apiGetSingle(Employee employee) {
+    Network.GET(Network.API_LIST_SINGLE + employee.id.toString(),
+            Network.paramsEmpty())
+        .then((response) => {LogService.d(response.toString())});
   }
 
-  void _apiUpdate(Employee employee){
-    Network.PUT(Network.API_UPDATE + employee.id.toString(), Network.paramsUpdate(employee)).then((response) => {LogService.w(response.toString())});
+  void _apiDelete(Employee employee) {
+    Network.DEL(
+            Network.API_DELETE + employee.id.toString(), Network.paramsEmpty())
+        .then((response) => {LogService.d(response.toString())});
   }
+
+  void _apiCreatePost(Employee employee) {
+    Network.POST(Network.API_CREATE, Network.paramsCreate(employee))
+        .then((response) => {LogService.i(response.toString())});
+  }
+
+  void _apiUpdate(Employee employee) {
+    Network.PUT(Network.API_UPDATE + employee.id.toString(),
+            Network.paramsUpdate(employee))
+        .then((response) => {LogService.w(response.toString())});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Employees List",
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(itemBuilder: (ctx, index) {
+              return itemEmp(items[index]);
+            }),
+    );
+  }
 
+  Widget itemEmp(Employee employee) {
+    return SizedBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            employee.employeeName.toString(),
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            employee.employeeAge.toString(),
+            style: const TextStyle(color: Colors.black, fontSize: 18),
+          ),
+        ],
+      ),
     );
   }
 }
